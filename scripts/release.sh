@@ -135,8 +135,8 @@ prep_stage_area() {
 extract_release_image_binary() {
   local tag="$1"
   local dest="$2"
-  arch_ver=${tag#*:}
-  local out_bin="$dest"/microshift-"$arch_ver"
+  oc_arch="microshift-${t#*"$VERSION-"}"
+  local out_bin="$dest"/microshift-"$oc_arch"
   podman cp "$(podman create "$tag")":/usr/bin/microshift "$out_bin" >&2
   echo "$out_bin"
 }
