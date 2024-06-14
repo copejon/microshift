@@ -101,7 +101,10 @@ debug:
 	@echo MINOR:"$(MINOR)"
 	@echo PATCH:"$(PATCH)"
 
-GO_BUILD_FLAGS :=-tags 'include_gcs include_oss containers_image_openpgp gssapi providerless netcgo osusergo strictfipsruntime'
+define check-flavor
+	if [ $MICROSHIFT_FLAVOR -eq community ]; then
+
+GO_BUILD_FLAGS :=-tags 'include_gcs include_oss containers_image_openpgp gssapi providerless netcgo osusergo strictfipsruntime $()'
 
 # Set variables for test-unit target
 GO_TEST_FLAGS=$(GO_BUILD_FLAGS)

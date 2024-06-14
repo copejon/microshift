@@ -1,3 +1,4 @@
+//go:build okd
 package embedded
 
 import (
@@ -5,7 +6,8 @@ import (
 	"io/fs"
 )
 
-//go:embed components controllers core crd version release
+//go:embed controllers core crd version release components/csi-snapshot-controller  components/openshift-dns components/openshift-router components/ovn  components/service-ca
+//go:embed components/topolvm
 var content embed.FS
 
 func Asset(name string) ([]byte, error) {
