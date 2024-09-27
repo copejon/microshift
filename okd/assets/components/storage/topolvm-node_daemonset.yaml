@@ -118,7 +118,7 @@ spec:
         - -c
         - until [ -f /etc/topolvm/lvmd.yaml ]; do echo waiting for lvmd config file;
           sleep 5; done
-        image: '{{ .ReleaseImage.openssl }}'
+        image: '{{ .ReleaseImage.topolvm_csi }}'
         name: file-checker
         resources: {}
         terminationMessagePolicy: FallbackToLogsOnError
