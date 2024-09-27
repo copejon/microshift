@@ -14,7 +14,7 @@ spec:
   template:
     metadata:
       annotations:
-        lvms.microshift.io/lvmd_config_sha256sum: '{{ Sha256sum .lvmd }}'
+        lvms.microshift.io/lvmd_config_sha256sum: '{{ crypto.SHA256 .lvmd }}'
         target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
       labels:
         app.kubernetes.io/component: topolvm-node

@@ -1,4 +1,0 @@
-plugins:
-  Sha256sum:
-    cmd: /opt/homebrew/bin/sha256sum 
-
