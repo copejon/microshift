@@ -28,6 +28,6 @@ scenario_run_tests() {
         return 0
     fi
     run_tests host1 \
-        --variable TARGET_REF=${target_ref} \
+        --variable "TARGET_REF:${target_ref}" \
         suites/upgrade/upgrade-disrupts-user-workloads.robot
 }
