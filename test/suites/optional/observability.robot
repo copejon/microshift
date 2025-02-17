@@ -12,6 +12,7 @@ Resource    ../../resources/common.resource
 Suite Setup    Setup Suite And Set Journal Cursor
 Suite Teardown    Teardown Suite And Unset Journal Cursor
 
+
 *** Variables ***
 ${JOURNAL_CUR}    ${EMPTY}
 
