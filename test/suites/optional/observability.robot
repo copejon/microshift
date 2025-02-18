@@ -5,8 +5,7 @@ Documentation    This suite performs basic log scans to determine if the opentel
 Library    OperatingSystem
 Library    ../../resources/journalctl.py
 
-Resource   ../resources/kubeconfig.resource
-Resource   ../resources/common.resource
+Resource    ../../resources/kubeconfig.resource
 Resource    ../../resources/common.resource
 
 Suite Setup    Setup Suite And Set Journal Cursor
