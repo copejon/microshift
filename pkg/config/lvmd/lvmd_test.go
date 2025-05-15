@@ -281,7 +281,7 @@ func TestToStorageClassList(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := ToStorageClassList(tt.args.lvmd)
+			got := GenerateStorageClassList(tt.args.lvmd)
 			if len(got) != len(tt.want) {
 				t.Errorf("len(got) = %v, len(want) %v", got, tt.want)
 			}

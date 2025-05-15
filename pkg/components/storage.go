@@ -130,7 +130,7 @@ func setupPluginResources(ctx context.Context, cfg *config.Config, kubeconfigPat
 		}
 	)
 
-	lvmd.ToStorageClassList()
+	lvmd.GenerateStorageClassList()
 
 	if err := assets.ApplyNamespaces(ctx, ns, kubeconfigPath); err != nil {
 		klog.Warningf("Failed to apply ns %v: %v", ns, err)
