@@ -3,6 +3,14 @@
 
 package lvmd
 
+// lvmd stores the read-in or defaulted values of the lvmd configuration and provides the topolvm-node process information
+// about its host's storage environment.
+type lvmd struct {
+	DeviceClasses []*DeviceClass `json:"device-classes"`
+	SocketName    string         `json:"socket-name"`
+	Message       string         `json:"-"`
+}
+
 type DeviceType string
 
 const (

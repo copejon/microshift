@@ -2,6 +2,7 @@ package lvmd
 
 import (
 	"fmt"
+	"k8s.io/klog/v2"
 	"os"
 	"strings"
 
@@ -11,10 +12,19 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
-var config *Lvmd
+var config *lvmd
+
+func init() {
+	if err := NewFromConfig(RuntimeLvmdConfigFile); err != nil {
+		klog.Warning("config could not be initialized from %s: %w", RuntimeLvmdConfigFile, err)
+	}
+	if err := NewFromVolumeGroups(); err != nil {
+		klog.Warning("config could not be initialized from volume groups: %w", err)
+	}
+}
 
 func NewFromConfig(lvmdconfigPath string) error {
-	var l = new(Lvmd)
+	var l = new(lvmd)
 	buf, err := os.ReadFile(lvmdconfigPath)
 	if err != nil {
 		return fmt.Errorf("error to read lvmd file: %w", err)
@@ -34,7 +44,7 @@ func uint64Ptr(val uint64) *uint64 {
 	return &val
 }
 
-// NewFromVolumeGroups returns a configuration struct for Lvmd with
+// NewFromVolumeGroups returns a configuration struct for lvmd with
 // default settings based on the current host. If a single volume
 // group is found, that value is used. If multiple volume groups are
 // available and one is named "rhel", that group is used. Otherwise,
@@ -45,7 +55,7 @@ func NewFromVolumeGroups() error {
 	if err != nil {
 		return fmt.Errorf("error discovering LVM volume groups: %w", err)
 	}
-	l := &Lvmd{SocketName: defaultSockName}
+	l := &lvmd{SocketName: defaultSockName}
 	defaultSet := false
 	for _, vg := range vgNames {
 		if vg == "microshift" && !defaultSet {
@@ -81,7 +91,7 @@ func Write() error {
 	return nil
 }
 
-// GenerateStorageClassList takes a Lvmd object pointer and returns a list of storageClasses representing each device class
+// GenerateStorageClassList takes a lvmd object pointer and returns a list of storageClasses representing each device class
 // StorageClass names are a concatenation of `topolvm-provision` and `DeviceClass.Name`. If
 // lvmd.DeviceClasses[*].
 func GenerateStorageClassList() []*storage.StorageClass {

@@ -194,7 +194,7 @@ func loadCSIPluginConfig(ctx context.Context,
 	// usrCfg is the user's configuration file.
 	usrCfg string,
 	runtimeCfg string,
-) (*lvmd.Lvmd, error) {
+) (*lvmd.lvmd, error) {
 	usrCfgDir := filepath.Dir(usrCfg)
 	ctx, cancel := context.WithCancelCause(ctx)
 
