@@ -16,20 +16,20 @@ func TestGetLvmdConfigForVGs(t *testing.T) {
 	tests := []struct {
 		name        string
 		vgNames     []string
-		expected    *Lvmd
+		expected *lvmd
 		expectedErr error
 	}{
 		{
 			name: "no groups",
-			expected: &Lvmd{
+			expected: &lvmd{
 				SocketName: defaultSockName,
-				Message:    errorMessageNoVolumeGroups,
+				Message: "No volume groups found",
 			},
 		},
 		{
 			name:    "one group",
 			vgNames: []string{"choose-me"},
-			expected: &Lvmd{
+			expected: &lvmd{
 				SocketName: defaultSockName,
 				DeviceClasses: []*DeviceClass{
 					{
@@ -39,13 +39,13 @@ func TestGetLvmdConfigForVGs(t *testing.T) {
 						SpareGB:     func() *uint64 { s := uint64(defaultSpareGB); return &s }(),
 					},
 				},
-				Message: statusMessageDefaultAvailable,
+				Message: "Defaulting to the only available volume group",
 			},
 		},
 		{
 			name:    "one group default",
 			vgNames: []string{defaultRHEL4EdgeVolumeGroup},
-			expected: &Lvmd{
+			expected: &lvmd{
 				SocketName: defaultSockName,
 				DeviceClasses: []*DeviceClass{
 					{
@@ -55,13 +55,13 @@ func TestGetLvmdConfigForVGs(t *testing.T) {
 						SpareGB:     func() *uint64 { s := uint64(defaultSpareGB); return &s }(),
 					},
 				},
-				Message: statusMessageDefaultAvailable,
+				Message: "Defaulting to the only available volume group",
 			},
 		},
 		{
 			name:    "default first",
 			vgNames: []string{defaultRHEL4EdgeVolumeGroup, "other"},
-			expected: &Lvmd{
+			expected: &lvmd{
 				SocketName: defaultSockName,
 				DeviceClasses: []*DeviceClass{
 					{
@@ -71,13 +71,13 @@ func TestGetLvmdConfigForVGs(t *testing.T) {
 						SpareGB:     func() *uint64 { s := uint64(defaultSpareGB); return &s }(),
 					},
 				},
-				Message: statusMessageFoundDefault,
+				Message: "Found default volume group \"microshift\"",
 			},
 		},
 		{
 			name:    "default last",
 			vgNames: []string{"other", defaultRHEL4EdgeVolumeGroup},
-			expected: &Lvmd{
+			expected: &lvmd{
 				SocketName: defaultSockName,
 				DeviceClasses: []*DeviceClass{
 					{
@@ -87,15 +87,15 @@ func TestGetLvmdConfigForVGs(t *testing.T) {
 						SpareGB:     uint64Ptr(defaultSpareGB),
 					},
 				},
-				Message: statusMessageFoundDefault,
+				Message: "Found default volume group \"microshift\"",
 			},
 		},
 		{
 			name:    "no default",
 			vgNames: []string{"other", "choose-me"},
-			expected: &Lvmd{
+			expected: &lvmd{
 				SocketName: defaultSockName,
-				Message:    errorMessageMultipleVolumeGroups,
+				Message: "Multiple volume groups are available, but no configuration file was provided.",
 			},
 		},
 	}
@@ -124,7 +124,7 @@ func Test_newLvmdConfigFromFile(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *Lvmd
+		want *lvmd
 		wantErr bool
 	}{
 		{
@@ -140,7 +140,7 @@ func Test_newLvmdConfigFromFile(t *testing.T) {
 			args: args{
 				p: "./test/lvmd.yaml",
 			},
-			want: &Lvmd{
+			want: &lvmd{
 				SocketName: "/run/lvmd/lvmd.socket",
 				DeviceClasses: []*DeviceClass{
 					{
@@ -183,7 +183,7 @@ func TestToStorageClassList(t *testing.T) {
 	allowVolExp := true
 
 	type args struct {
-		lvmd *Lvmd
+		lvmd *lvmd
 	}
 	tests := []struct {
 		name string
@@ -193,7 +193,7 @@ func TestToStorageClassList(t *testing.T) {
 		{
 			name: "single device class",
 			args: args{
-				lvmd: &Lvmd{
+				lvmd: &lvmd{
 					SocketName: "/run/lvmd/lvmd.socket",
 					DeviceClasses: []*DeviceClass{
 						{
@@ -226,7 +226,7 @@ func TestToStorageClassList(t *testing.T) {
 		{
 			name: "multiple device classes with default set",
 			args: args{
-				lvmd: &Lvmd{
+				lvmd: &lvmd{
 					SocketName: "/run/lvmd/lvmd.socket",
 					DeviceClasses: []*DeviceClass{
 						{

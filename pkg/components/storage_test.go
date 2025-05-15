@@ -23,7 +23,7 @@ func Test_loadCSIPluginConfig(t *testing.T) {
 
 	testUsrCfg := filepath.Join(t.TempDir(), "lvmd-usr.yaml")
 	testRuntimeCfg := filepath.Join(t.TempDir(), "lvmd-runtime.yaml")
-	testDefaultCfgLvmd := &lvmd.Lvmd{
+	testDefaultCfgLvmd := &lvmd.lvmd{
 		DeviceClasses: []*lvmd.DeviceClass{
 			{
 				Name:        "ssd",
@@ -34,7 +34,7 @@ func Test_loadCSIPluginConfig(t *testing.T) {
 		SocketName: "the socket should not matter!",
 	}
 
-	getRuntimeCfgAfterDelay := func() *lvmd.Lvmd {
+	getRuntimeCfgAfterDelay := func() *lvmd.lvmd {
 		// wait for the runtime config to be updated via the watch
 		time.Sleep(runtimeCfgUpdateDelay)
 		runtimeLvmd, err := lvmd.NewLvmdConfigFromFile(testRuntimeCfg)
@@ -46,14 +46,14 @@ func Test_loadCSIPluginConfig(t *testing.T) {
 	}
 
 	previousCfgLoader := defaultCfgLoader
-	defaultCfgLoader = func() (*lvmd.Lvmd, error) {
+	defaultCfgLoader = func() (*lvmd.lvmd, error) {
 		return testDefaultCfgLvmd, nil
 	}
 	t.Cleanup(func() {
 		defaultCfgLoader = previousCfgLoader
 	})
 
-	var runtimeLvmd *lvmd.Lvmd
+	var runtimeLvmd *lvmd.lvmd
 	t.Run("default config loading and runtime file init should work when no files exist", func(t *testing.T) {
 		cfg, err := loadCSIPluginConfig(ctx, testUsrCfg, testRuntimeCfg)
 		if err != nil {
@@ -78,9 +78,9 @@ func Test_loadCSIPluginConfig(t *testing.T) {
 		}
 	})
 
-	var usrLvmd *lvmd.Lvmd
+	var usrLvmd *lvmd.lvmd
 	t.Run("user config loading", func(t *testing.T) {
-		usrLvmd = &lvmd.Lvmd{
+		usrLvmd = &lvmd.lvmd{
 			DeviceClasses: []*lvmd.DeviceClass{
 				{
 					Name:        "ssd",

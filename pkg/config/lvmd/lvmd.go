@@ -15,46 +15,33 @@ const (
 	LvmdConfigFileName          = "lvmd.yaml"
 	defaultSockName             = "/run/lvmd/lvmd.socket"
 	defaultRHEL4EdgeVolumeGroup = "microshift"
-
-	errorMessageNoVolumeGroups       = "No volume groups found"
-	errorMessageMultipleVolumeGroups = "Multiple volume groups are available, but no configuration file was provided."
-	statusMessageFoundDefault        = "Found default volume group \"microshift\""
-	statusMessageDefaultAvailable    = "Defaulting to the only available volume group"
 )
-
-// Lvmd stores the read-in or defaulted values of the lvmd configuration and provides the topolvm-node process information
-// about its host's storage environment.
-type Lvmd struct {
-	DeviceClasses []*DeviceClass `json:"device-classes"`
-	SocketName    string         `json:"socket-name"`
-	Message       string         `json:"-"`
-}
 
 // IsEnabled returns a boolean indicating whether the CSI driver
 // should be enabled for this host.
-func (l *Lvmd) IsEnabled() bool {
+func (l *lvmd) IsEnabled() bool {
 	return len(l.DeviceClasses) > 0
 }
 
-func getLvmdConfigForVGs(vgNames []string) (*Lvmd, error) {
-	response := &Lvmd{
+func getLvmdConfigForVGs(vgNames []string) (*lvmd, error) {
+	response := &lvmd{
 		SocketName: defaultSockName,
 	}
 	vgName := ""
 	if len(vgNames) == 0 {
-		response.Message = errorMessageNoVolumeGroups
-		klog.V(2).Info(errorMessageNoVolumeGroups)
+		response.Message = "No volume groups found"
+		klog.V(2).Info("No volume groups found")
 		return response, nil
 	} else if len(vgNames) == 1 {
 		vgName = vgNames[0]
 		klog.V(2).Infof("Using volume group %q", vgName)
-		response.Message = statusMessageDefaultAvailable
+		response.Message = "Defaulting to the only available volume group"
 	} else {
 		for _, name := range vgNames {
 			if name == defaultRHEL4EdgeVolumeGroup {
 				klog.V(2).Infof("Using default volume group %q", defaultRHEL4EdgeVolumeGroup)
 				vgName = name
-				response.Message = statusMessageFoundDefault
+				response.Message = "Found default volume group \"microshift\""
 				break
 			}
 		}
@@ -63,7 +50,7 @@ func getLvmdConfigForVGs(vgNames []string) (*Lvmd, error) {
 		// multiple volume groups, disable the CSI driver.
 		if vgName == "" {
 			klog.V(2).Infof("Multiple volume groups available but no configuration file is present, disabling CSI. %v", vgNames)
-			response.Message = errorMessageMultipleVolumeGroups
+			response.Message = "Multiple volume groups are available, but no configuration file was provided."
 			return response, nil
 		}
 	}
@@ -81,13 +68,13 @@ func getLvmdConfigForVGs(vgNames []string) (*Lvmd, error) {
 	return response, nil
 }
 
-// DefaultLvmdConfig returns a configuration struct for Lvmd with
+// DefaultLvmdConfig returns a configuration struct for lvmd with
 // default settings based on the current host. If a single volume
 // group is found, that value is used. If multiple volume groups are
 // available and one is named "rhel", that group is used. Otherwise,
 // the configuration returned will report that it is not enabled (see
 // IsEnabled()).
-func DefaultLvmdConfig() (*Lvmd, error) {
+func DefaultLvmdConfig() (*lvmd, error) {
 	vgNames, err := getVolumeGroups()
 	if err != nil {
 		return nil, fmt.Errorf("failed to discover local volume groups: %w", err)
@@ -112,8 +99,8 @@ func getVolumeGroups() ([]string, error) {
 	return names, nil
 }
 
-func NewLvmdConfigFromFile(p string) (*Lvmd, error) {
-	l := new(Lvmd)
+func NewLvmdConfigFromFile(p string) (*lvmd, error) {
+	l := new(lvmd)
 	buf, err := os.ReadFile(p)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read lvmd file: %w", err)
@@ -130,7 +117,7 @@ func NewLvmdConfigFromFile(p string) (*Lvmd, error) {
 	return l, nil
 }
 
-func SaveLvmdConfigToFile(l *Lvmd, p string) error {
+func SaveLvmdConfigToFile(l *lvmd, p string) error {
 	buf, err := yaml.Marshal(l)
 	if err != nil {
 		return fmt.Errorf("marshalling lvmd config: %w", err)
