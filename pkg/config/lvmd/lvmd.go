@@ -17,6 +17,15 @@ const (
 	defaultRHEL4EdgeVolumeGroup = "microshift"
 )
 
+// TODO update for accuracy
+// lvmd stores the read-in or defaulted values of the lvmd configuration and provides the topolvm-node process information
+// about its host's storage environment.
+type lvmd struct {
+	DeviceClasses []*DeviceClass `json:"device-classes"`
+	SocketName    string         `json:"socket-name"`
+	Message       string         `json:"-"` //TODO remove this
+}
+
 // IsEnabled returns a boolean indicating whether the CSI driver
 // should be enabled for this host.
 func (l *lvmd) IsEnabled() bool {

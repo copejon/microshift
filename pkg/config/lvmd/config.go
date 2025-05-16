@@ -15,6 +15,9 @@ import (
 var config *lvmd
 
 func init() {
+	// this is not the first boot if a RuntimeLvmdConfigFile exists, thus the prior config should be considered first
+	// The lvmd hot swapping logic will handle comparison of the system config /etc/microshift/lvmd.yaml against RuntimeLvmdConfigFile. If
+	// the system config
 	if err := NewFromConfig(RuntimeLvmdConfigFile); err != nil {
 		klog.Warning("config could not be initialized from %s: %w", RuntimeLvmdConfigFile, err)
 	}
@@ -97,13 +100,13 @@ func Write() error {
 func GenerateStorageClassList() []*storage.StorageClass {
 	var storageClasses []*storage.StorageClass
 	for _, dc := range config.DeviceClasses {
-		sc := deviceClassToStorageClass(dc)
+		sc := toStorageClass(dc)
 		storageClasses = append(storageClasses, sc)
 	}
 	return storageClasses
 }
 
-func deviceClassToStorageClass(dc *DeviceClass) *storage.StorageClass {
+func toStorageClass(dc *DeviceClass) *storage.StorageClass {
 	reclaimPolicy := v1.PersistentVolumeReclaimDelete
 	bindingMode := storage.VolumeBindingWaitForFirstConsumer
 	allowVolExpansion := true
