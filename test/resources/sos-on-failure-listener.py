@@ -15,6 +15,7 @@ or long running Pods (like MicroShift core Pods) might've been restarted couple 
 
 import os
 import re
+from types import BuiltinFunctionType
 from robot import result, running
 from robot.libraries.BuiltIn import BuiltIn
 
@@ -47,6 +48,12 @@ def end_keyword(data: running.model.Keyword, res: result.model.Keyword):
             BuiltIn().log("sos-on-failure-listener.py: SKIP_SOS is set to true, skipping SOS report collection")
             return
         BuiltIn().log("sos-on-failure-listener.py: Failure was detected, collecting SOS report")
+        # If MicroShift is in the middle of starting, it is preferrable give it a change to become ready so as to
+        # capture cluster resources.
+        BuiltIn().import_resource("microshift-process.resource")
+        BuiltIn().import_resource("systemd.resource")
+        stdout, _, _ = BuiltIn.run_keyword("Get Systemd Setting", "microshift", "SubState")
+        print(f"DEBUG ==== {stdout}")
         BuiltIn().import_resource('microshift-host.resource')
         cmd = "microshift-sos-report --profiles microshift --plugins ''"
         if len(suite_namespaces) > 0 or len(test_namespaces) > 0:
