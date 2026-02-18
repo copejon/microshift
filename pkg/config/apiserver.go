@@ -153,16 +153,16 @@ type FeatureGates struct {
 	CustomNoUpgrade CustomNoUpgrade `json:"customNoUpgrade"`
 }
 
+// ToApiserverArgs converts the FeatureGates struct to a list of feature-gates arguments for the kube-apiserver.
+// Validation checks should be performed before calling this function to ensure the FeatureGates struct is valid.
 func (fg FeatureGates) ToApiserverArgs() ([]string, error) {
 	ret := sets.NewString()
-	addFeatures := func(features []string, enabled bool) {
-		for _, feature := range features {
-			ret.Insert(fmt.Sprintf("%s=%t", feature, enabled))
-		}
+	for _, feature := range fg.CustomNoUpgrade.Enabled {
+		ret.Insert(fmt.Sprintf("%s=true", feature))
 	}
-
-	addFeatures(fg.CustomNoUpgrade.Enabled, true)
-	addFeatures(fg.CustomNoUpgrade.Disabled, false)
+	for _, feature := range fg.CustomNoUpgrade.Disabled {
+		ret.Insert(fmt.Sprintf("%s=false", feature))
+	}
 	return ret.List(), nil
 }
 
@@ -183,11 +183,15 @@ func (fg *FeatureGates) validateFeatureGates() error {
 		return nil
 	}
 
+	// FeatureSet must be empty or CustomNoUpgrade. If empty, CustomNoUpgrade.Enabled/Disabled lists must be empty.
 	switch fg.FeatureSet {
 	case "":
+		if len(fg.CustomNoUpgrade.Enabled) > 0 || len(fg.CustomNoUpgrade.Disabled) > 0 {
+			return fmt.Errorf("CustomNoUpgrade enabled/disabled lists must be empty when FeatureSet is empty")
+		}
 		return nil
 	case FeatureSetCustomNoUpgrade:
-		// Valid - continue with validation
+		// Valid - continue to validate enabled/disabled lists below
 	case FeatureSetDevPreviewNoUpgrade, FeatureSetTechPreviewNoUpgrade:
 		return fmt.Errorf("FeatureSet %s is not supported. Use CustomNoUpgrade to enable/disable feature gates", fg.FeatureSet)
 	default:
