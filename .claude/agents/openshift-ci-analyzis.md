@@ -21,14 +21,22 @@ color: blue
 
 # Job Name and Job ID
 
-The Job Name and Job ID are encoded in the URL. Use this template to determine the job name and job id:
+The Job Name and Job ID are encoded in the URL. Use these temp
+lates to determine the job name and job id:
+
+Type: Periodic Job Url
 ```
 https://prow.ci.openshift.org/view/gs/test-platform-results/logs/periodic-ci-openshift-microshift-release-{MICROSHIFT_VERSION}-{JOB_NAME}/{JOB_ID}
 ```
 
+Type: Presubmit Job Url
+```
+https://prow.ci.openshift.org/view/gs/test-platform-results/pr-logs/pull/openshift_microshift/6314/pull-ci-openshift-microshift-{ONTO_BRANCH}-{JOB_NAME}/{JOB_ID}
+```
+
 # Important Files
 > IMPORTANT! All files in this list will be downloaded after running the
-- `${TMP}/build-log.txt`: Log containing prow job output and most likely place to identify AWS infra related or hypervisor related errors.
+- `build-log.txt`: Log containing prow job output and most likely place to identify AWS infra related or hypervisor related errors.
 - `${STEP}/build-log.txt`: Each step in the CI job is individually logged in a build-log.txt file.
 - `./artifacts/${JOB_NAME}/openshift-microshift-infra-sos-aws/artifacts/sosreport-i-"${UNIQUE_ID}"-YYYY-MM-DD-"${UNIQUE_ID_2}".tar.xz`: Compressed archive containing select portions of the test host's filesystem, relevant logs, and system configurations.
 - `${JOB_NAME}/${JOB_ID}/artifacts/e2e-aws-ovn-ocp-conformance-arm64/openshift-microshift-e2e-origin-conformance/build-log.txt`: Step-specific build log for origin conformance tests.
@@ -47,31 +55,22 @@ https://gcsweb-ci.apps.ci.l2s4.p1.openshiftapps.com/gcs/test-platform-results/pr
 
 This link provides a diagram of the steps that make up the test. Think about reading this diagram when identifying step failures because not all fatal errors cause the current step to fail but may cause the next step to fail.
 
-# Common Commands
-
-Create a temporary working directory to store artifacts for the current job:
+Fetch the highlevel build log:
 ```bash
-mktemp -d /tmp/openshift-ci-analysis-XXXX
-```
-
-Fetch the high level summary of the failed prow job:
-```bash
-curl https://prow.ci.openshift.org/view/gs/test-platform-results/logs/periodic-ci-openshift-microshift-release-4.21-periodics-e2e-aws-ovn-ocp-conformance-serial/1984108354347208704 -o ${TMP}/build-log.txt
+curl -OL https://storage.googleapis.com/test-platform-results/pr-logs/pull/openshift_microshift/{PULL_REQUEST_NUMBER}/pull-ci-openshift-microshift-{ONTO_BRANCH}-{JOB_NAME}/{JOB_ID}/build-log.txt
 ```
 
 Scan the build log for arbitrary text:
 ```bash
-grep '${SOME_TEXT}' ${GREP_OPTS} ${TMP}/build-log.txt
+grep '${SOME_TEXT}' ${GREP_OPTS} ~/build-log.txt
 ```
 
 Download all prow job artifacts:
 ```bash
-gcloud storage cp -r gs://test-platform-results/logs/periodic-ci-openshift-microshift-release-4.21-periodics-e2e-aws-ovn-ocp-conformance-serial/1984108354347208704/ ${TMP}/
+gcloud storage cp -r gs://test-platform-results/logs/periodic-ci-openshift-microshift-{ONTO_BRANCH}-{JOB_NAME}/{JOB_ID}/ ~/
 ```
 
 # Workflow
-
-0. Create and use a temporary working directory. Use the mktemp -d command to create this directory, then add the directory to the claude context by executing @add-dir /tmp/NEW_TEMP_DIR.
 
 1. **Scan for errors**: Start by scanning the top level `build-log.txt` file for errors and determine the step where the error occurred. Record each error with the filepath and line number for later reference.
 
