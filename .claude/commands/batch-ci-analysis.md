@@ -51,12 +51,11 @@ Use these parameters for each Task call:
 > URL: {URL}
 >
 > Steps:
-> 1. Create a temp directory with `mktemp -d /tmp/openshift-ci-analysis-XXXX`
-> 2. Fetch `finished.json` to get job result and timing
-> 3. Fetch `started.json` for start time
-> 4. Extract the job name, job ID, version, and architecture from the URL
-> 5. List all test scenarios from the scenario-info directory
-> 6. For each scenario, check only the junit.xml for pass/fail counts
+> 1. Fetch `finished.json` to get job result and timing
+> 2. Fetch `started.json` for start time
+> 3. Extract the job name, job ID, version, and architecture from the URL
+> 4. List all test scenarios from the scenario-info directory
+> 5. For each scenario, check only the junit.xml for pass/fail counts
 >
 > Return your findings in EXACTLY this format (one field per line):
 >
@@ -160,7 +159,7 @@ After ALL sub-agents from both tiers complete, produce the final report.
 
 #### Error Analysis
 
-{Full error report from Tier 2 sub-agent}
+{Full error report from Tier 2 sub-agent} 
 
 {Repeat for each failed job}
 
@@ -180,7 +179,7 @@ After ALL sub-agents from both tiers complete, produce the final report.
 
 ## Notes
 
-- This skill spawns `openshift-ci-analysis` sub-agents via the Task tool
+- This command spawns `openshift-ci-analysis` sub-agents via the Task tool
 - Tier 1 sub-agents are limited to 15 turns for fast metadata extraction
 - Tier 2 sub-agents get 30 turns for thorough error investigation
 - All sub-agents within a tier run in parallel (multiple Task calls in one message)
