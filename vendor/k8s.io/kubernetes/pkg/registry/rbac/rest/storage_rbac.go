@@ -169,7 +169,7 @@ func (p *PolicyData) EnsureRBACPolicy() genericapiserver.PostStartHookFunc {
 				utilruntime.HandleError(fmt.Errorf("unable to initialize client set: %v", err))
 				return false, nil
 			}
-			return ensureRBACPolicy(p, client)
+			return ensureRBACPolicy(hookContext, p, client)
 		})
 		// if we're never able to make it through initialization, kill the API server
 		if err != nil {
@@ -180,14 +180,14 @@ func (p *PolicyData) EnsureRBACPolicy() genericapiserver.PostStartHookFunc {
 	}
 }
 
-func ensureRBACPolicy(p *PolicyData, client clientset.Interface) (done bool, err error) {
+func ensureRBACPolicy(ctx context.Context, p *PolicyData, client clientset.Interface) (done bool, err error) {
 	failedReconciliation := false
 	// Make sure etcd is responding before we start reconciling
-	if _, err := client.RbacV1().ClusterRoles().List(context.TODO(), metav1.ListOptions{}); err != nil {
+	if _, err := client.RbacV1().ClusterRoles().List(ctx, metav1.ListOptions{}); err != nil {
 		utilruntime.HandleError(fmt.Errorf("unable to initialize clusterroles: %v", err))
 		return false, nil
 	}
-	if _, err := client.RbacV1().ClusterRoleBindings().List(context.TODO(), metav1.ListOptions{}); err != nil {
+	if _, err := client.RbacV1().ClusterRoleBindings().List(ctx, metav1.ListOptions{}); err != nil {
 		utilruntime.HandleError(fmt.Errorf("unable to initialize clusterrolebindings: %v", err))
 		return false, nil
 	}
