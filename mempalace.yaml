@@ -1,0 +1,110 @@
+wing: microshift
+rooms:
+- name: packaging
+  description: Files from packaging/
+  keywords:
+  - packaging
+  - packaging
+- name: cmd
+  description: Files from cmd/
+  keywords:
+  - cmd
+  - cmd
+- name: testing
+  description: Files from test/
+  keywords:
+  - testing
+  - test
+- name: hack
+  description: Files from hack/
+  keywords:
+  - hack
+  - hack
+- name: validate_microshift
+  description: Files from validate-microshift/
+  keywords:
+  - validate_microshift
+  - validate-microshift
+- name: documentation
+  description: Files from docs/
+  keywords:
+  - documentation
+  - docs
+- name: observability
+  description: Files from observability/
+  keywords:
+  - observability
+  - observability
+- name: ansible
+  description: Files from ansible/
+  keywords:
+  - ansible
+  - ansible
+- name: scratch
+  description: Files from scratch/
+  keywords:
+  - scratch
+  - scratch
+- name: dashboards
+  description: Files from dashboards/
+  keywords:
+  - dashboards
+  - dashboards
+- name: scripts
+  description: Files from scripts/
+  keywords:
+  - scripts
+  - scripts
+- name: etcd
+  description: Files from etcd/
+  keywords:
+  - etcd
+  - etcd
+- name: deps
+  description: Files from deps/
+  keywords:
+  - deps
+  - deps
+- name: origin
+  description: Files from origin/
+  keywords:
+  - origin
+  - origin
+- name: cockpit_plugin
+  description: Files from cockpit-plugin/
+  keywords:
+  - cockpit_plugin
+  - cockpit-plugin
+- name: design
+  description: Files from assets/
+  keywords:
+  - design
+  - assets
+- name: vendor
+  description: Files from vendor/
+  keywords:
+  - vendor
+  - vendor
+- name: pkg
+  description: Files from pkg/
+  keywords:
+  - pkg
+  - pkg
+- name: configuration
+  description: Files from config/
+  keywords:
+  - configuration
+  - config
+- name: frontend
+  description: Files from components/
+  keywords:
+  - frontend
+  - components
+- name: backend
+  description: Files from controllers/
+  keywords:
+  - backend
+  - controllers
+- name: general
+  description: Files that don't fit other rooms
+  keywords: []

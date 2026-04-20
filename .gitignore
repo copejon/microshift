@@ -3,6 +3,7 @@
 .vscode/
 .work/
 _output/
+_input/
 __pycache__/
 ansible/*.txt
 test/variables.yaml
