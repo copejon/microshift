@@ -1,0 +1,8 @@
+{
+  "release": {
+    "base": "placeholder"
+  },
+  "images": {
+    "kube_state_metrics": "quay.io/openshift-release-dev/ocp-v5.0-art-dev@sha256:ad7ae7a3c499ed390a36ae17acd5251aa2a5a3833cd4144d1976f4d2b968b654"
+  }
+}
