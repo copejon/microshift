@@ -236,6 +236,7 @@ and can be used to embed those images into osbuilder blueprints or bootc contain
 Summary: OpenTelemetry-Collector configured for MicroShift
 BuildArch: noarch
 Requires: microshift = %{version}
+Requires: microshift-metrics-kube-state-metrics = %{version}
 Requires: opentelemetry-collector
 
 %description observability
@@ -259,6 +260,25 @@ Requires: microshift = %{version}
 %description cert-manager-release-info
 The microshift-cert-manager-release-info package provides release information files for this
 release. These files contain the list of container image references used by Cert Manager
+and can be used to embed those images into osbuilder blueprints or bootc containerfiles.
+
+%package metrics-kube-state-metrics
+Summary: Kubernetes kube-state-metrics for MicroShift
+ExclusiveArch: x86_64 aarch64
+Requires: microshift = %{version}
+
+%description metrics-kube-state-metrics
+The microshift-metrics-kube-state-metrics package provides kube-state-metrics for MicroShift.
+Install this package to expose Kubernetes object state metrics via a secure endpoint.
+
+%package metrics-kube-state-metrics-release-info
+Summary: Release information for kube-state-metrics for MicroShift
+BuildArch: noarch
+Requires: microshift-release-info = %{version}
+
+%description metrics-kube-state-metrics-release-info
+The microshift-metrics-kube-state-metrics-release-info package provides release information files for this
+release. These files contain the list of container image references used by kube-state-metrics
 and can be used to embed those images into osbuilder blueprints or bootc containerfiles.
 
 %package sriov
@@ -562,7 +582,9 @@ install -p -m644 assets/optional/ai-model-serving/release-ai-model-serving-x86_6
 
 # observability
 install -d -m755 %{buildroot}/%{_sysconfdir}/microshift/observability
+install -d -m755 %{buildroot}/%{_sysconfdir}/microshift/observability/otelcol.d
 install -p -m644 packaging/observability/*.yaml -D %{buildroot}%{_sysconfdir}/microshift/observability/
+install -p -m644 packaging/observability/otelcol.d/microshift-metrics-kube-state-metrics.yaml %{buildroot}%{_sysconfdir}/microshift/observability/otelcol.d/
 # Explicit copy of large config as default. Not using symlink to avoid accidental package upgrade overwriting user config if the user edits the config without copying (i.e. edits the target of symlink).
 install -p -m644 packaging/observability/opentelemetry-collector-large.yaml -D %{buildroot}%{_sysconfdir}/microshift/observability/opentelemetry-collector.yaml
 install -p -m644 packaging/observability/microshift-observability.service %{buildroot}%{_unitdir}/
@@ -598,6 +620,28 @@ cat assets/optional/cert-manager/manager/images-x86_64.yaml >> %{buildroot}/%{_p
 # cert-manager-release-info
 mkdir -p -m755 %{buildroot}%{_datadir}/microshift/release
 install -p -m644 assets/optional/cert-manager/release-cert-manager-{x86_64,aarch64}.json %{buildroot}%{_datadir}/microshift/release/
+
+# kube-state-metrics
+install -d -m755 %{buildroot}/%{_prefix}/lib/microshift/manifests.d/081-microshift-kube-state-metrics
+install -p -m644 assets/optional/kube-state-metrics/00-namespace.yaml %{buildroot}/%{_prefix}/lib/microshift/manifests.d/081-microshift-kube-state-metrics
+install -p -m644 assets/optional/kube-state-metrics/01-service-account.yaml %{buildroot}/%{_prefix}/lib/microshift/manifests.d/081-microshift-kube-state-metrics
+install -p -m644 assets/optional/kube-state-metrics/01-cluster-role.yaml %{buildroot}/%{_prefix}/lib/microshift/manifests.d/081-microshift-kube-state-metrics
+install -p -m644 assets/optional/kube-state-metrics/01-cluster-role-binding.yaml %{buildroot}/%{_prefix}/lib/microshift/manifests.d/081-microshift-kube-state-metrics
+install -p -m644 assets/optional/kube-state-metrics/02-kube-rbac-proxy-secret.yaml %{buildroot}/%{_prefix}/lib/microshift/manifests.d/081-microshift-kube-state-metrics
+install -p -m644 assets/optional/kube-state-metrics/02-custom-resource-state-configmap.yaml %{buildroot}/%{_prefix}/lib/microshift/manifests.d/081-microshift-kube-state-metrics
+install -p -m644 assets/optional/kube-state-metrics/03-deployment.yaml %{buildroot}/%{_prefix}/lib/microshift/manifests.d/081-microshift-kube-state-metrics
+install -p -m644 assets/optional/kube-state-metrics/04-service.yaml %{buildroot}/%{_prefix}/lib/microshift/manifests.d/081-microshift-kube-state-metrics
+install -p -m644 assets/optional/kube-state-metrics/kustomization.yaml %{buildroot}/%{_prefix}/lib/microshift/manifests.d/081-microshift-kube-state-metrics
+
+%ifarch %{arm} aarch64
+cat assets/optional/kube-state-metrics/kustomization.aarch64.yaml >> %{buildroot}/%{_prefix}/lib/microshift/manifests.d/081-microshift-kube-state-metrics/kustomization.yaml
+%endif
+%ifarch x86_64
+cat assets/optional/kube-state-metrics/kustomization.x86_64.yaml >> %{buildroot}/%{_prefix}/lib/microshift/manifests.d/081-microshift-kube-state-metrics/kustomization.yaml
+%endif
+
+# kube-state-metrics-release-info
+install -p -m644 assets/optional/kube-state-metrics/release-kube-state-metrics-{x86_64,aarch64}.json %{buildroot}%{_datadir}/microshift/release/
 
 # sriov
 install -d -m755 %{buildroot}/%{_prefix}/lib/microshift/manifests.d/070-microshift-sriov
@@ -790,10 +834,12 @@ fi
 %files observability
 %dir %{_prefix}/lib/microshift/manifests.d/003-microshift-observability
 %dir %{_sysconfdir}/microshift/observability/
+%dir %{_sysconfdir}/microshift/observability/otelcol.d
 %{_unitdir}/microshift-observability.service
 %config(noreplace) %{_sysconfdir}/microshift/observability/opentelemetry-collector.yaml
 %{_sysconfdir}/microshift/observability/opentelemetry-collector-*.yaml
 %{_prefix}/lib/microshift/manifests.d/003-microshift-observability/*
+%config(noreplace) %{_sysconfdir}/microshift/observability/otelcol.d/microshift-metrics-kube-state-metrics.yaml
 
 %files cert-manager
 %dir %{_prefix}/lib/microshift/manifests.d/060-microshift-cert-manager
@@ -801,6 +847,13 @@ fi
 
 %files cert-manager-release-info
 %{_datadir}/microshift/release/release-cert-manager-{x86_64,aarch64}.json
+
+%files metrics-kube-state-metrics
+%dir %{_prefix}/lib/microshift/manifests.d/081-microshift-kube-state-metrics
+%{_prefix}/lib/microshift/manifests.d/081-microshift-kube-state-metrics/*
+
+%files metrics-kube-state-metrics-release-info
+%{_datadir}/microshift/release/release-kube-state-metrics-{x86_64,aarch64}.json
 
 %files sriov
 %dir %{_prefix}/lib/microshift/manifests.d/070-microshift-sriov

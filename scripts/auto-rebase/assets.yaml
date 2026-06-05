@@ -301,6 +301,27 @@ assets:
       - file: service.yaml
       - file: serviceaccount.yaml
 
+  - dir: optional/kube-state-metrics/
+    ignore: "MicroShift-specific kube-state-metrics manifests sourced from CMO"
+    files:
+      - file: 00-namespace.yaml
+      - file: 01-cluster-role-binding.yaml
+      - file: 01-cluster-role.yaml
+      - file: 01-service-account.yaml
+      - file: 02-custom-resource-state-configmap.yaml
+      - file: 02-kube-rbac-proxy-secret.yaml
+      - file: 03-deployment.yaml
+      - file: 04-service.yaml
+      - file: kustomization.yaml
+      - file: kustomization.x86_64.yaml
+        ignore: "gets generated during image rebase"
+      - file: kustomization.aarch64.yaml
+        ignore: "gets generated during image rebase"
+      - file: release-kube-state-metrics-x86_64.json
+        ignore: "gets generated during image rebase"
+      - file: release-kube-state-metrics-aarch64.json
+        ignore: "gets generated during image rebase"
+
   - dir: optional/observability/
     ignore: "they don't exist in upstream repository - only in microshift"
     files:
