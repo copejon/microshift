@@ -38,6 +38,21 @@ var optionalWorkloadPaths = map[string]optionalWorkloads{
 		Namespace: "sriov-network-operator",
 		Workloads: NamespaceWorkloads{Deployments: []string{"sriov-network-operator"}},
 	},
+
+	"/usr/lib/microshift/manifests.d/081-microshift-kube-state-metrics": {
+		Namespace: "openshift-monitoring",
+		Workloads: NamespaceWorkloads{Deployments: []string{"kube-state-metrics"}},
+	},
+}
+
+// mergeWorkloads merges two NamespaceWorkloads, returning a new NamespaceWorkloads. This is helpful for cases
+// where components from multiple sources are deployed to the same namespace.
+func mergeWorkloads(existing, incoming NamespaceWorkloads) NamespaceWorkloads {
+	return NamespaceWorkloads{
+		Deployments:  append(existing.Deployments, incoming.Deployments...),
+		DaemonSets:   append(existing.DaemonSets, incoming.DaemonSets...),
+		StatefulSets: append(existing.StatefulSets, incoming.StatefulSets...),
+	}
 }
 
 // fillOptionalMicroShiftWorkloads assembles list of optional MicroShift workloads
@@ -73,7 +88,7 @@ func fillOptionalMicroShiftWorkloads(workloadsToCheck map[string]NamespaceWorklo
 		}
 
 		klog.Infof("Optional component path exists and is configured: %s - expecting %v in namespace %q", path, ow.Workloads.String(), ow.Namespace)
-		workloadsToCheck[ow.Namespace] = ow.Workloads
+		workloadsToCheck[ow.Namespace] = mergeWorkloads(workloadsToCheck[ow.Namespace], ow.Workloads)
 	}
 	return nil
 }
