@@ -59,6 +59,10 @@ exporters:
       enabled: true
   otlphttp/loki: # only for logs, exports the logs in the loki server
     endpoint: "http://{{LOKI_HOST}}:{{LOKI_PORT}}/otlp"
+  otlp:
+    endpoint: "localhost:4317"
+    tls:
+      insecure: true
 
 extensions:
   file_storage:
