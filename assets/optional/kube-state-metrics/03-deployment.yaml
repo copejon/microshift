@@ -43,27 +43,6 @@ spec:
         - --metric-labels-allowlist=pods=[*],nodes=[*],namespaces=[*],persistentvolumes=[*],persistentvolumeclaims=[*],poddisruptionbudgets=[*]
         image: quay.io/openshift/kube-state-metrics
         name: kube-state-metrics
-        livenessProbe:
-          httpGet:
-            path: /healthz
-            port: 8081
-          initialDelaySeconds: 5
-          periodSeconds: 10
-          timeoutSeconds: 5
-        readinessProbe:
-          httpGet:
-            path: /healthz
-            port: 8081
-          initialDelaySeconds: 5
-          periodSeconds: 10
-          timeoutSeconds: 5
-        startupProbe:
-          httpGet:
-            path: /healthz
-            port: 8081
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 30
         resources:
           limits:
             cpu: 100m
