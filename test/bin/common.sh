@@ -388,8 +388,8 @@ MICROSHIFT_Y2_OPTIONAL_RPMS_LIST=(
     microshift-cert-manager-release-info
     microshift-sriov
     microshift-sriov-release-info
-    microshift-metrics-kube-state-metrics
-    microshift-metrics-kube-state-metrics-release-info
+    microshift-metrics-kube-state
+    microshift-metrics-kube-state-release-info
 )
 MICROSHIFT_Y1_OPTIONAL_RPMS_LIST=(
     "${MICROSHIFT_Y2_OPTIONAL_RPMS_LIST[@]}"
