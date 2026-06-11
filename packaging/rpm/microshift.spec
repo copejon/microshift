@@ -236,7 +236,7 @@ and can be used to embed those images into osbuilder blueprints or bootc contain
 Summary: OpenTelemetry-Collector configured for MicroShift
 BuildArch: noarch
 Requires: microshift = %{version}
-Requires: microshift-metrics-kube-state-metrics = %{version}
+Requires: microshift-metrics-kube-state = %{version}
 Requires: opentelemetry-collector
 
 %description observability
@@ -262,22 +262,22 @@ The microshift-cert-manager-release-info package provides release information fi
 release. These files contain the list of container image references used by Cert Manager
 and can be used to embed those images into osbuilder blueprints or bootc containerfiles.
 
-%package metrics-kube-state-metrics
+%package metrics-kube-state
 Summary: Kubernetes kube-state-metrics for MicroShift
 ExclusiveArch: x86_64 aarch64
 Requires: microshift = %{version}
 
-%description metrics-kube-state-metrics
-The microshift-metrics-kube-state-metrics package provides kube-state-metrics for MicroShift.
+%description metrics-kube-state
+The microshift-metrics-kube-state package provides kube-state-metrics for MicroShift.
 Install this package to expose Kubernetes object state metrics via a secure endpoint.
 
-%package metrics-kube-state-metrics-release-info
+%package metrics-kube-state-release-info
 Summary: Release information for kube-state-metrics for MicroShift
 BuildArch: noarch
 Requires: microshift-release-info = %{version}
 
-%description metrics-kube-state-metrics-release-info
-The microshift-metrics-kube-state-metrics-release-info package provides release information files for this
+%description metrics-kube-state-release-info
+The microshift-metrics-kube-state-release-info package provides release information files for this
 release. These files contain the list of container image references used by kube-state-metrics
 and can be used to embed those images into osbuilder blueprints or bootc containerfiles.
 
@@ -848,11 +848,11 @@ fi
 %files cert-manager-release-info
 %{_datadir}/microshift/release/release-cert-manager-{x86_64,aarch64}.json
 
-%files metrics-kube-state-metrics
+%files metrics-kube-state
 %dir %{_prefix}/lib/microshift/manifests.d/081-microshift-kube-state-metrics
 %{_prefix}/lib/microshift/manifests.d/081-microshift-kube-state-metrics/*
 
-%files metrics-kube-state-metrics-release-info
+%files metrics-kube-state-release-info
 %{_datadir}/microshift/release/release-kube-state-metrics-{x86_64,aarch64}.json
 
 %files sriov
